@@ -28,7 +28,7 @@ class CriarPlanoUseCaseTest extends UseCaseTest {
 
         when(repository.save(any(Plano.class))).thenReturn(new Plano());
 
-        final var id = useCase.criarPlanoSimples(email, periodo);
+        final var id = useCase.criarPlanoSimples(email, periodo, true);
         assertNull(id);
 
         verify(repository, times(1)).save(any(Plano.class));

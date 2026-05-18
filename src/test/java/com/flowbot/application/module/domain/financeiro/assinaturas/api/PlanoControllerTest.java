@@ -76,7 +76,7 @@ class PlanoControllerTest extends E2ETests {
     @Test
     void criarEAtulizarPlano() throws Exception {
         // VALIDACAO MENSAL
-        var inputDto = new CriarPlanoInputDto("john@doe.io", "MENSAL");
+        var inputDto = new CriarPlanoInputDto("john@doe.io", "MENSAL", null);
         var request = post("/plano")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(inputDto));
@@ -100,7 +100,7 @@ class PlanoControllerTest extends E2ETests {
         // FIM DA VALIDACAO MENSAL
         // VALIDACAO ANUAL
 
-        inputDto = new CriarPlanoInputDto("john@doe.io", "ANUAL");
+        inputDto = new CriarPlanoInputDto("john@doe.io", "ANUAL", null);
         request = post("/plano")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(inputDto));
@@ -126,7 +126,7 @@ class PlanoControllerTest extends E2ETests {
 
     @Test
     void criarPlano() throws Exception {
-        var inputDto = new CriarPlanoInputDto("john@doe.io", "MENSAL");
+        var inputDto = new CriarPlanoInputDto("john@doe.io", "MENSAL", null);
         final var request = post("/plano")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(inputDto));
@@ -194,6 +194,40 @@ class PlanoControllerTest extends E2ETests {
                 .andExpect(jsonPath("$[0].ativoHa").exists())
                 .andExpect(jsonPath("$[1].usuario").exists())
                 .andExpect(jsonPath("$[1].ativoHa").exists());
+    }
+
+    @Test
+    @DisplayName("gratuito=null (não enviado) deve criar plano pago; false permanece falso; true cria gratuito")
+    void criarPlanoComFlagGratuito() throws Exception {
+        // null → false (clientes existentes não enviam o campo)
+        var semCampo = post("/plano")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"pago-null@email.com\",\"periodoPlano\":\"MENSAL\"}");
+        mvc.perform(semCampo).andExpect(status().isOk());
+
+        mvc.perform(get("/plano/vigente?email=pago-null@email.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gratuito").value(false));
+
+        // gratuito=false → false
+        var comFalse = new CriarPlanoInputDto("pago-false@email.com", "MENSAL", false);
+        mvc.perform(post("/plano")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(comFalse))).andExpect(status().isOk());
+
+        mvc.perform(get("/plano/vigente?email=pago-false@email.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gratuito").value(false));
+
+        // gratuito=true → true
+        var comTrue = new CriarPlanoInputDto("gratuito-true@email.com", "MENSAL", true);
+        mvc.perform(post("/plano")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(comTrue))).andExpect(status().isOk());
+
+        mvc.perform(get("/plano/vigente?email=gratuito-true@email.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gratuito").value(true));
     }
 
     @Test

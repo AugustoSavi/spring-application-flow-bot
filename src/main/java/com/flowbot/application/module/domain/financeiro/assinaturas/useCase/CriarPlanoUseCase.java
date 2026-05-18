@@ -18,9 +18,9 @@ public class CriarPlanoUseCase {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public String criarPlanoSimples(String email, PeriodoPlano periodoPlano) {
+    public String criarPlanoSimples(String email, PeriodoPlano periodoPlano, boolean gratuito) {
         removerPlanoCasoExista(email);
-        return mongoTemplate.save(Plano.criarPlanoPadrao(email, periodoPlano)).getId();
+        return mongoTemplate.save(Plano.criarPlano(email, periodoPlano, gratuito)).getId();
     }
 
     private void removerPlanoCasoExista(String email) {

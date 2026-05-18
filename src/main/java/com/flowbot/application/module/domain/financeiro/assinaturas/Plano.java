@@ -11,21 +11,27 @@ import java.util.Objects;
 public class Plano {
     @Id
     private String id;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dataCriacao;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime finalizaEm;
     private PeriodoPlano periodoPlano;
     private UsuarioDoPlano usuario;
     private Boolean ativo;
+    private Boolean gratuito = false;
     private String informacaoPagamentoExterno;
 
     public static Plano criarPlanoPadrao(String email, PeriodoPlano periodoPlano) {
+        return criarPlano(email, periodoPlano, true);
+    }
+
+    public static Plano criarPlano(String email, PeriodoPlano periodoPlano, boolean gratuito) {
         var plano = new Plano();
         plano.dataCriacao = LocalDateTime.now();
         plano.periodoPlano = periodoPlano;
         plano.usuario = new UsuarioDoPlano(email, email, null);
         plano.ativo = true;
+        plano.gratuito = gratuito;
         plano.informacaoPagamentoExterno = "Hotmart";
         plano.validar();
         plano.calcularTermino();
@@ -71,6 +77,10 @@ public class Plano {
 
     public Boolean getAtivo() {
         return ativo;
+    }
+
+    public Boolean getGratuito() {
+        return gratuito;
     }
 
     public void processarReembolso() {

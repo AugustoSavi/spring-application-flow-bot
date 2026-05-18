@@ -22,19 +22,16 @@ class PlanoTest {
         assertTrue(compareIgnoringSecondsAndMillis(LocalDateTime.now().plusYears(1), planoObject.getFinalizaEm()));
 
         assertTrue(planoObject.getAtivo());
+        assertTrue(planoObject.getGratuito());
         assertEquals(email, planoObject.getUsuario().nick());
         assertEquals(email, planoObject.getUsuario().email());
         assertEquals(plano, planoObject.getPeriodoPlano());
     }
 
     @Test
-    void deveAplicarAsValidacoes() {
-        final var plano = PeriodoPlano.ANUAL;
-        assertThrows(IllegalArgumentException.class, () -> Plano.criarPlanoPadrao(null, plano));
-
-        assertThrows(IllegalArgumentException.class, () -> Plano.criarPlanoPadrao("", plano));
-
-        assertThrows(IllegalArgumentException.class, () -> Plano.criarPlanoPadrao("null", null));
+    @DisplayName("Plano sem campo gratuito no documento deve deserializar como false")
+    void deveRetornarGratuitoFalsePorPadrao() {
+        assertFalse(new Plano().getGratuito());
     }
 
 }

@@ -26,6 +26,7 @@ public class SecurityConfig {
                             authorizeConfig.requestMatchers(HttpMethod.GET,"/plano/vigente").permitAll();
                             authorizeConfig.requestMatchers(HttpMethod.POST, "/plano/acesso").permitAll();
                             authorizeConfig.requestMatchers(HttpMethod.GET, "/configuracoes-usuario/public/**").permitAll();
+                            authorizeConfig.requestMatchers(HttpMethod.POST, "/usuario").permitAll();
                             authorizeConfig.requestMatchers(HttpMethod.OPTIONS).permitAll();
                             authorizeConfig.anyRequest().authenticated();
                         })
