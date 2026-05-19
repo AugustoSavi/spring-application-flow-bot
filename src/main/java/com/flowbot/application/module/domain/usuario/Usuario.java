@@ -52,4 +52,8 @@ public class Usuario {
     public LocalDateTime getDataCriacao() {
         return dataCriacao;
     }
+
+    public void confirmarEmail() {
+        this.emailValidado = true;
+    }
 }

@@ -34,4 +34,16 @@ class PlanoTest {
         assertFalse(new Plano().getGratuito());
     }
 
+    @Test
+    @DisplayName("Ao processar reembolso o plano deve ser marcado como gratuito")
+    void deveMarcarComoGratuitoAoProcessarReembolso() {
+        var plano = Plano.criarPlano("pago@email.com", PeriodoPlano.MENSAL, false);
+        assertFalse(plano.getGratuito());
+
+        plano.processarReembolso();
+
+        assertTrue(plano.getGratuito());
+        assertTrue(compareIgnoringSecondsAndMillis(LocalDateTime.now().plusDays(5), plano.getFinalizaEm()));
+    }
+
 }

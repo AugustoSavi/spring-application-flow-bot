@@ -3,7 +3,9 @@ package com.flowbot.application.module.domain.usuario.useCase;
 import com.flowbot.application.context.TenantThreads;
 import com.flowbot.application.module.domain.financeiro.assinaturas.Plano;
 import com.flowbot.application.module.domain.financeiro.assinaturas.PeriodoPlano;
+import com.flowbot.application.module.domain.usuario.TokenConfirmacao;
 import com.flowbot.application.module.domain.usuario.Usuario;
+import com.flowbot.application.module.domain.usuario.service.EnviarEmailConfirmacaoService;
 import com.flowbot.application.shared.AuthUtils;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,14 +21,17 @@ public class RegistrarUsuarioUseCase {
     private final MongoTemplate adminMongoTemplate;
     private final MongoTemplate mongoTemplate;
     private final PasswordEncoder passwordEncoder;
+    private final EnviarEmailConfirmacaoService enviarEmailConfirmacaoService;
 
     public RegistrarUsuarioUseCase(
             @Qualifier("adminMongoTemplate") MongoTemplate adminMongoTemplate,
             MongoTemplate mongoTemplate,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            EnviarEmailConfirmacaoService enviarEmailConfirmacaoService) {
         this.adminMongoTemplate = adminMongoTemplate;
         this.mongoTemplate = mongoTemplate;
         this.passwordEncoder = passwordEncoder;
+        this.enviarEmailConfirmacaoService = enviarEmailConfirmacaoService;
     }
 
     public void execute(String email, String senha) {
@@ -37,6 +42,9 @@ public class RegistrarUsuarioUseCase {
             var senhaHash = passwordEncoder.encode(senha);
             adminMongoTemplate.save(Usuario.criar(email, senhaHash));
             mongoTemplate.save(Plano.criarPlano(email, PeriodoPlano.MENSAL, true));
+            var token = TokenConfirmacao.criar(email);
+            adminMongoTemplate.save(token);
+            enviarEmailConfirmacaoService.enviar(email, token.getToken());
         } finally {
             TenantThreads.clear();
         }

@@ -252,6 +252,26 @@ class PlanoControllerTest extends E2ETests {
         var formatedDate = LocalDate.now().plusDays(5).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         responseVigente.andExpect(status().isOk())
                 .andExpect(jsonPath("$.vigenteAte").value(formatedDate))
-                .andExpect(jsonPath("$.email").value(email));
+                .andExpect(jsonPath("$.email").value(email))
+                .andExpect(jsonPath("$.gratuito").value(true));
+    }
+
+    @Test
+    @DisplayName("Reembolso de plano pago deve alterar gratuito para true")
+    void solicitarReembolsoDeveAlterarPlanoParaGratuito() throws Exception {
+        final var email = "pago-reembolso@email.com";
+        mongoTemplate.save(Plano.criarPlano(email, com.flowbot.application.module.domain.financeiro.assinaturas.PeriodoPlano.MENSAL, false));
+
+        mvc.perform(post("/plano/reembolso?email=" + email)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mvc.perform(get("/plano/vigente?email=" + email)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gratuito").value(true))
+                .andExpect(jsonPath("$.vigenteAte").value(
+                        LocalDate.now().plusDays(5).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                ));
     }
 }

@@ -85,5 +85,6 @@ public class Plano {
 
     public void processarReembolso() {
         this.finalizaEm = LocalDateTime.now().plusDays(5);
+        this.gratuito = true;
     }
 }
