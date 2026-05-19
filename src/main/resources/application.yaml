@@ -21,6 +21,10 @@ email-api:
 app:
   base-url: ${APP_BASE_URL:http://localhost:8080}
 
+rate-limit:
+  max-requests: 10
+  window-seconds: 60
+
 logging:
   level:
       springframework:
