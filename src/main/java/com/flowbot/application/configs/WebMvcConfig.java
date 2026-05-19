@@ -17,6 +17,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(rateLimitInterceptor)
-                .addPathPatterns("/usuario", "/usuario/confirmar");
+                .addPathPatterns("/usuario", "/usuario/confirmar", "/usuario/reenviar-confirmacao");
     }
 }

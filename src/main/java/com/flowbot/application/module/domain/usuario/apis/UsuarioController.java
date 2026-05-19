@@ -4,6 +4,7 @@ import com.flowbot.application.context.TenantThreads;
 import com.flowbot.application.module.domain.usuario.apis.dto.RegistrarUsuarioInputDto;
 import com.flowbot.application.module.domain.usuario.apis.dto.TenantDto;
 import com.flowbot.application.module.domain.usuario.useCase.ConfirmarEmailUseCase;
+import com.flowbot.application.module.domain.usuario.useCase.ReenviarEmailConfirmacaoUseCase;
 import com.flowbot.application.module.domain.usuario.useCase.RegistrarUsuarioUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,15 @@ public class UsuarioController {
 
     private final RegistrarUsuarioUseCase registrarUsuarioUseCase;
     private final ConfirmarEmailUseCase confirmarEmailUseCase;
+    private final ReenviarEmailConfirmacaoUseCase reenviarEmailConfirmacaoUseCase;
 
-    public UsuarioController(RegistrarUsuarioUseCase registrarUsuarioUseCase, ConfirmarEmailUseCase confirmarEmailUseCase) {
+    public UsuarioController(
+            RegistrarUsuarioUseCase registrarUsuarioUseCase,
+            ConfirmarEmailUseCase confirmarEmailUseCase,
+            ReenviarEmailConfirmacaoUseCase reenviarEmailConfirmacaoUseCase) {
         this.registrarUsuarioUseCase = registrarUsuarioUseCase;
         this.confirmarEmailUseCase = confirmarEmailUseCase;
+        this.reenviarEmailConfirmacaoUseCase = reenviarEmailConfirmacaoUseCase;
     }
 
     @GetMapping("/tenant")
@@ -36,6 +42,12 @@ public class UsuarioController {
     @GetMapping("/confirmar")
     public ResponseEntity<Void> confirmarEmail(@RequestParam String token) {
         confirmarEmailUseCase.execute(token);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reenviar-confirmacao")
+    public ResponseEntity<Void> reenviarConfirmacao(@RequestParam String email) {
+        reenviarEmailConfirmacaoUseCase.execute(email);
         return ResponseEntity.noContent().build();
     }
 }
