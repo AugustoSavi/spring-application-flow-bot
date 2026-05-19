@@ -18,7 +18,7 @@ public class Plano {
     private PeriodoPlano periodoPlano;
     private UsuarioDoPlano usuario;
     private Boolean ativo;
-    private Boolean gratuito = false;
+    private boolean gratuito;
     private String informacaoPagamentoExterno;
 
     public static Plano criarPlanoPadrao(String email, PeriodoPlano periodoPlano) {
@@ -79,7 +79,7 @@ public class Plano {
         return ativo;
     }
 
-    public Boolean getGratuito() {
+    public boolean getGratuito() {
         return gratuito;
     }
 

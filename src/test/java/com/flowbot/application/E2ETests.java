@@ -2,6 +2,7 @@ package com.flowbot.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flowbot.application.http.BotBuilderApi;
+import com.flowbot.application.module.domain.usuario.service.EnviarEmailConfirmacaoService;
 import com.flowbot.application.shared.ApplicationScheduleService;
 import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,4 +33,7 @@ public abstract class E2ETests {
 
     @MockBean
     protected BotBuilderApi botBuilderApi;
+
+    @MockBean
+    protected EnviarEmailConfirmacaoService enviarEmailConfirmacaoService;
 }

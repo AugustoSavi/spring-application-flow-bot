@@ -2,10 +2,12 @@ package com.flowbot.application.module.domain.usuario.useCase;
 
 import com.flowbot.application.UseCaseTest;
 import com.flowbot.application.module.domain.financeiro.assinaturas.Plano;
+import com.flowbot.application.module.domain.usuario.TokenConfirmacao;
 import com.flowbot.application.module.domain.usuario.Usuario;
+import com.flowbot.application.module.domain.usuario.service.EnviarEmailConfirmacaoService;
 import jakarta.validation.ValidationException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
@@ -13,12 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class RegistrarUsuarioUseCaseTest extends UseCaseTest {
 
-    @InjectMocks
     private RegistrarUsuarioUseCase useCase;
 
     @Mock
@@ -30,18 +32,26 @@ class RegistrarUsuarioUseCaseTest extends UseCaseTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private EnviarEmailConfirmacaoService enviarEmailConfirmacaoService;
+
+    @BeforeEach
+    void setUp() {
+        useCase = new RegistrarUsuarioUseCase(adminMongoTemplate, mongoTemplate, passwordEncoder, enviarEmailConfirmacaoService);
+    }
+
     @Test
     void deveRegistrarUsuarioComSucesso() {
         when(adminMongoTemplate.exists(any(Query.class), eq(Usuario.class))).thenReturn(false);
         when(mongoTemplate.exists(any(Query.class), eq(Plano.class))).thenReturn(false);
         when(passwordEncoder.encode(any())).thenReturn("hashed-senha");
-        when(adminMongoTemplate.save(any(Usuario.class))).thenReturn(new Usuario());
-        when(mongoTemplate.save(any(Plano.class))).thenReturn(new Plano());
 
         useCase.execute("novo@email.com", "senha123");
 
-        verify(adminMongoTemplate, times(1)).save(any(Usuario.class));
-        verify(mongoTemplate, times(1)).save(any(Plano.class));
+        verify(adminMongoTemplate).save(any(Usuario.class));
+        verify(mongoTemplate).save(any(Plano.class));
+        verify(adminMongoTemplate).save(any(TokenConfirmacao.class));
+        verify(enviarEmailConfirmacaoService).enviar(eq("novo@email.com"), anyString());
     }
 
     @Test
