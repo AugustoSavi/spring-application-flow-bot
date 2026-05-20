@@ -6,7 +6,6 @@ import com.flowbot.application.module.domain.financeiro.assinaturas.PeriodoPlano
 import com.flowbot.application.module.domain.usuario.TokenConfirmacao;
 import com.flowbot.application.module.domain.usuario.Usuario;
 import com.flowbot.application.module.domain.usuario.service.EnviarEmailConfirmacaoService;
-import com.flowbot.application.shared.AuthUtils;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -34,9 +33,9 @@ public class RegistrarUsuarioUseCase {
         this.enviarEmailConfirmacaoService = enviarEmailConfirmacaoService;
     }
 
-    public void execute(String email, String senha) {
+    public void execute(String email, String senha, String tenant) {
         validarEmailNaoRegistrado(email);
-        AuthUtils.setTenantFromEmail(email);
+        TenantThreads.setTenantId(tenant);
         try {
             validarSemPlanoAtivo(email);
             var senhaHash = passwordEncoder.encode(senha);

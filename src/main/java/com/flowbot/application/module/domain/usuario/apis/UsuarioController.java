@@ -34,8 +34,8 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> registrar(@RequestBody RegistrarUsuarioInputDto dto) {
-        registrarUsuarioUseCase.execute(dto.email(), dto.senha());
+    public ResponseEntity<Void> registrar(@RequestBody RegistrarUsuarioInputDto dto, @RequestParam String tenant) {
+        registrarUsuarioUseCase.execute(dto.email(), dto.senha(), tenant);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
