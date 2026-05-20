@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -20,6 +22,8 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,12 +57,42 @@ class RegistrarUsuarioControllerTest extends E2ETests {
     void deveRegistrarNovoUsuario() throws Exception {
         var dto = new RegistrarUsuarioInputDto("novo@email.com", "senha123");
         var request = post("/usuario")
+                .param("tenant", "0b0872ee")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(dto));
 
         mvc.perform(request)
                 .andDo(print())
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("Deve criar plano no tenant fornecido, não no tenant derivado do email")
+    void deveCriarPlanoNoTenantFornecido() throws Exception {
+        var email = "appmeconectei@gmail.com";
+        var tenantFornecido = "0b0872ee";
+        var dto = new RegistrarUsuarioInputDto(email, "senha123");
+        var request = post("/usuario")
+                .param("tenant", tenantFornecido)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(dto));
+
+        mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isCreated());
+
+        var query = new Query().addCriteria(Criteria.where("usuario.email").is(email));
+
+        TenantThreads.setTenantId(tenantFornecido);
+        var planoNoTenantCorreto = mongoTemplate.findOne(query, Plano.class);
+        TenantThreads.clear();
+
+        TenantThreads.setTenantId(AuthUtils.setTenantFromEmail(email));
+        var planoNoTenantDerivadoDoEmail = mongoTemplate.findOne(query, Plano.class);
+        TenantThreads.clear();
+
+        assertNotNull(planoNoTenantCorreto, "Plano deve existir no tenant fornecido");
+        assertNull(planoNoTenantDerivadoDoEmail, "Plano não deve existir no tenant derivado do email");
     }
 
     @Test
@@ -69,6 +103,7 @@ class RegistrarUsuarioControllerTest extends E2ETests {
 
         var dto = new RegistrarUsuarioInputDto("duplicado@email.com", "senha123");
         var request = post("/usuario")
+                .param("tenant", "0b0872ee")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(dto));
 
@@ -80,8 +115,9 @@ class RegistrarUsuarioControllerTest extends E2ETests {
     @Test
     @DisplayName("Deve rejeitar registro quando usuário já possui plano ativo")
     void deveRejeitarUsuarioComPlanoAtivo() throws Exception {
+        var tenantFornecido = "0b0872ee";
         var plano = Plano.criarPlano("comPlano@email.com", PeriodoPlano.MENSAL, true);
-        AuthUtils.setTenantFromEmail("comPlano@email.com");
+        TenantThreads.setTenantId(tenantFornecido);
         try {
             mongoTemplate.save(plano);
         } finally {
@@ -90,6 +126,7 @@ class RegistrarUsuarioControllerTest extends E2ETests {
 
         var dto = new RegistrarUsuarioInputDto("comPlano@email.com", "senha123");
         var request = post("/usuario")
+                .param("tenant", tenantFornecido)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(dto));
 
