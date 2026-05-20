@@ -111,10 +111,10 @@ class PlanoMultiTenantTest extends E2ETests {
     @DisplayName("Deve garantir que cada tenant cria planos em seu próprio banco de dados")
     void deveCriarPlanosEmBancosSeparados() {
         TenantThreads.setTenantId(TENANT_1);
-        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_1, PeriodoPlano.MENSAL);
+        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_1, PeriodoPlano.MENSAL, true);
 
         TenantThreads.setTenantId(TENANT_2);
-        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_2, PeriodoPlano.ANUAL);
+        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_2, PeriodoPlano.ANUAL, true);
 
         TenantThreads.setTenantId(TENANT_1);
         var planosTenant1 = mongoTemplate.findAll(Plano.class);

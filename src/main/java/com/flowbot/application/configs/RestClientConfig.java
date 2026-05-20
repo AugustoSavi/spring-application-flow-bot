@@ -1,6 +1,7 @@
 package com.flowbot.application.configs;
 
 import com.flowbot.application.configs.properties.BotBuilderEngineApiProperties;
+import com.flowbot.application.configs.properties.EmailApiProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,18 @@ public class RestClientConfig {
 
     @Bean
     public RestClient restClient(final BotBuilderEngineApiProperties properties) {
+        final var factory = new JdkClientHttpRequestFactory();
+        factory.setReadTimeout(properties.getReadTimeout());
+
+        return RestClient.builder()
+                .baseUrl(properties.getBaseUrl())
+                .requestFactory(factory)
+                .requestInterceptor(RestClientConfig::logInterceptor)
+                .build();
+    }
+
+    @Bean("emailApiRestClient")
+    public RestClient emailApiRestClient(final EmailApiProperties properties) {
         final var factory = new JdkClientHttpRequestFactory();
         factory.setReadTimeout(properties.getReadTimeout());
 

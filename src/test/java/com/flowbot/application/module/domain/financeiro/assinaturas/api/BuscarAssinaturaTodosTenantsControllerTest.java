@@ -76,13 +76,13 @@ class BuscarAssinaturaTodosTenantsControllerTest extends E2ETests {
     @DisplayName("Deve buscar assinatura em todos os tenants e retornar múltiplos resultados")
     void deveBuscarAssinaturaEmTodosTenants() throws Exception {
         TenantThreads.setTenantId(TENANT_1);
-        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_1, PeriodoPlano.MENSAL);
+        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_1, PeriodoPlano.MENSAL, true);
 
         TenantThreads.setTenantId(TENANT_2);
-        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_2, PeriodoPlano.ANUAL);
+        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_2, PeriodoPlano.ANUAL, true);
 
         TenantThreads.setTenantId(TENANT_3);
-        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_3, PeriodoPlano.MENSAL);
+        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_3, PeriodoPlano.MENSAL, true);
 
         TenantThreads.clear();
 
@@ -105,7 +105,7 @@ class BuscarAssinaturaTodosTenantsControllerTest extends E2ETests {
     @DisplayName("Deve retornar lista vazia quando email não existe em nenhum tenant")
     void deveRetornarListaVaziaQuandoEmailNaoExiste() throws Exception {
         TenantThreads.setTenantId(TENANT_1);
-        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_1, PeriodoPlano.MENSAL);
+        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_1, PeriodoPlano.MENSAL, true);
 
         TenantThreads.clear();
 
@@ -124,7 +124,7 @@ class BuscarAssinaturaTodosTenantsControllerTest extends E2ETests {
     @DisplayName("Deve buscar assinatura apenas em tenants que possuem a collection plano")
     void deveBuscarApenasEmTenantsComCollection() throws Exception {
         TenantThreads.setTenantId(TENANT_1);
-        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_1, PeriodoPlano.MENSAL);
+        criarPlanoUseCase.criarPlanoSimples(EMAIL_TENANT_1, PeriodoPlano.MENSAL, true);
 
         TenantThreads.setTenantId(TENANT_2);
         mongoTemplate.dropCollection(Plano.class);
@@ -152,10 +152,10 @@ class BuscarAssinaturaTodosTenantsControllerTest extends E2ETests {
         var emailComum = "comum@example.com";
 
         TenantThreads.setTenantId(TENANT_1);
-        criarPlanoUseCase.criarPlanoSimples(emailComum, PeriodoPlano.MENSAL);
+        criarPlanoUseCase.criarPlanoSimples(emailComum, PeriodoPlano.MENSAL, true);
 
         TenantThreads.setTenantId(TENANT_2);
-        criarPlanoUseCase.criarPlanoSimples(emailComum, PeriodoPlano.ANUAL);
+        criarPlanoUseCase.criarPlanoSimples(emailComum, PeriodoPlano.ANUAL, true);
 
         TenantThreads.clear();
 

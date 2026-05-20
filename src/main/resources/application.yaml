@@ -15,6 +15,16 @@ bot-builder:
   read-timeout: 30000
   base-url: https://bot-builder-engine-2242d70bd3b3.herokuapp.com
 
+email-api:
+  base-url: ${EMAIL_API_URL:https://email-api-placeholder.com}
+
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+
+rate-limit:
+  max-requests: 10
+  window-seconds: 60
+
 logging:
   level:
       springframework:

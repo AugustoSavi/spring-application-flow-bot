@@ -15,11 +15,20 @@ public final class AuthUtils {
 
     public static String setTenant(String resourceOwner) {
         var length = resourceOwner.length();
+        if (length < 4) {
+            TenantThreads.setTenantId(resourceOwner);
+            return resourceOwner;
+        }
         var primeiras4caracteres = resourceOwner.substring(0, 4);
         var ultimas4caracteres = resourceOwner.substring(length - 4);
         var result = primeiras4caracteres + ultimas4caracteres;
         TenantThreads.setTenantId(result);
         return result;
+    }
+
+    public static String setTenantFromEmail(String email) {
+        var processed = email.replace("-", "").replace(".", "");
+        return setTenant(processed);
     }
 
     private static String extractResourceOwner(final Jwt jwt) {

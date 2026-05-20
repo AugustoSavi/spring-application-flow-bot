@@ -57,7 +57,8 @@ public class PlanoController {
     @PostMapping
     public ResponseEntity<Void> criarPlano(@RequestBody CriarPlanoInputDto dto) {
         PeriodoPlano periodoPlano = PeriodoPlano.valueOf(dto.periodoPlano());
-        var id = criarPlanoUseCase.criarPlanoSimples(dto.email(), periodoPlano);
+        boolean gratuito = dto.gratuito() != null && dto.gratuito();
+        var id = criarPlanoUseCase.criarPlanoSimples(dto.email(), periodoPlano, gratuito);
         HttpHeaders headers = new HttpHeaders();
         headers.add("id", id);
         return ResponseEntity.ok().headers(headers).build();

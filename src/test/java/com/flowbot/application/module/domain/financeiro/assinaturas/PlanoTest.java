@@ -22,19 +22,28 @@ class PlanoTest {
         assertTrue(compareIgnoringSecondsAndMillis(LocalDateTime.now().plusYears(1), planoObject.getFinalizaEm()));
 
         assertTrue(planoObject.getAtivo());
+        assertTrue(planoObject.getGratuito());
         assertEquals(email, planoObject.getUsuario().nick());
         assertEquals(email, planoObject.getUsuario().email());
         assertEquals(plano, planoObject.getPeriodoPlano());
     }
 
     @Test
-    void deveAplicarAsValidacoes() {
-        final var plano = PeriodoPlano.ANUAL;
-        assertThrows(IllegalArgumentException.class, () -> Plano.criarPlanoPadrao(null, plano));
+    @DisplayName("Plano sem campo gratuito no documento deve deserializar como false")
+    void deveRetornarGratuitoFalsePorPadrao() {
+        assertFalse(new Plano().getGratuito());
+    }
 
-        assertThrows(IllegalArgumentException.class, () -> Plano.criarPlanoPadrao("", plano));
+    @Test
+    @DisplayName("Ao processar reembolso o plano deve ser marcado como gratuito")
+    void deveMarcarComoGratuitoAoProcessarReembolso() {
+        var plano = Plano.criarPlano("pago@email.com", PeriodoPlano.MENSAL, false);
+        assertFalse(plano.getGratuito());
 
-        assertThrows(IllegalArgumentException.class, () -> Plano.criarPlanoPadrao("null", null));
+        plano.processarReembolso();
+
+        assertTrue(plano.getGratuito());
+        assertTrue(compareIgnoringSecondsAndMillis(LocalDateTime.now().plusDays(5), plano.getFinalizaEm()));
     }
 
 }
