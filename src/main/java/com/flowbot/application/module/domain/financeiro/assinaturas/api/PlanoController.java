@@ -4,12 +4,14 @@ import com.flowbot.application.context.TenantThreads;
 import com.flowbot.application.module.domain.financeiro.assinaturas.PeriodoPlano;
 import com.flowbot.application.module.domain.financeiro.assinaturas.PlanoAtivoOutput;
 import com.flowbot.application.module.domain.financeiro.assinaturas.api.dto.AcessoOutputDto;
-import com.flowbot.application.module.domain.financeiro.assinaturas.api.dto.CriarPlanoInputDto;
 import com.flowbot.application.module.domain.financeiro.assinaturas.api.dto.AssinaturaAtivaDto;
+import com.flowbot.application.module.domain.financeiro.assinaturas.api.dto.CriarPlanoInputDto;
+import com.flowbot.application.module.domain.financeiro.assinaturas.api.dto.ExpirarPlanosVencidosResultDto;
 import com.flowbot.application.module.domain.financeiro.assinaturas.api.dto.PlanoMultiTenantOutputDto;
 import com.flowbot.application.module.domain.financeiro.assinaturas.api.dto.RegistarAcessoDto;
 import com.flowbot.application.module.domain.financeiro.assinaturas.useCase.BuscarAssinaturaTodosTenantsUseCase;
 import com.flowbot.application.module.domain.financeiro.assinaturas.useCase.CriarPlanoUseCase;
+import com.flowbot.application.module.domain.financeiro.assinaturas.useCase.ExpirarPlanosVencidosUseCase;
 import com.flowbot.application.module.domain.financeiro.assinaturas.useCase.GerenciamentoDoPlanoUseCase;
 import com.flowbot.application.module.domain.financeiro.assinaturas.useCase.ListarAssinaturasAtivasUseCase;
 import org.springframework.http.HttpHeaders;
@@ -26,15 +28,18 @@ public class PlanoController {
     private final GerenciamentoDoPlanoUseCase gerenciamentoDoPlanoUseCase;
     private final BuscarAssinaturaTodosTenantsUseCase buscarAssinaturaTodosTenantsUseCase;
     private final ListarAssinaturasAtivasUseCase listarAssinaturasAtivasUseCase;
+    private final ExpirarPlanosVencidosUseCase expirarPlanosVencidosUseCase;
 
     public PlanoController(CriarPlanoUseCase criarPlanoUseCase,
                            GerenciamentoDoPlanoUseCase gerenciamentoDoPlanoUseCase,
                            BuscarAssinaturaTodosTenantsUseCase buscarAssinaturaTodosTenantsUseCase,
-                           ListarAssinaturasAtivasUseCase listarAssinaturasAtivasUseCase) {
+                           ListarAssinaturasAtivasUseCase listarAssinaturasAtivasUseCase,
+                           ExpirarPlanosVencidosUseCase expirarPlanosVencidosUseCase) {
         this.criarPlanoUseCase = criarPlanoUseCase;
         this.gerenciamentoDoPlanoUseCase = gerenciamentoDoPlanoUseCase;
         this.buscarAssinaturaTodosTenantsUseCase = buscarAssinaturaTodosTenantsUseCase;
         this.listarAssinaturasAtivasUseCase = listarAssinaturasAtivasUseCase;
+        this.expirarPlanosVencidosUseCase = expirarPlanosVencidosUseCase;
     }
 
     @GetMapping("/vigente")
@@ -100,5 +105,10 @@ public class PlanoController {
     @GetMapping("/assinaturas-ativas")
     public List<AssinaturaAtivaDto> listarAssinaturasAtivas() {
         return listarAssinaturasAtivasUseCase.listar();
+    }
+
+    @PostMapping("/expirar-planos-vencidos")
+    public ExpirarPlanosVencidosResultDto expirarPlanosVencidos() {
+        return expirarPlanosVencidosUseCase.expirar();
     }
 }
