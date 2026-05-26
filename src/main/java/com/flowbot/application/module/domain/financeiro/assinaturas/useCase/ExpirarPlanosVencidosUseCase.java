@@ -64,7 +64,7 @@ public class ExpirarPlanosVencidosUseCase {
 
                     Query query = new Query(
                             Criteria.where("finalizaEm").lt(LocalDateTime.now())
-                                    .and("gratuito").is(false)
+                                    .and("gratuito").ne(true)
                     );
                     Update update = new Update().set("gratuito", true);
                     var result = tenantMongoTemplate.updateMulti(query, update, Plano.class);
