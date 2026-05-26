@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -23,12 +22,10 @@ public class ListarAssinaturasAtivasUseCase {
     }
 
     public List<AssinaturaAtivaDto> listar() {
-        LocalDateTime agora = LocalDateTime.now();
         LocalDate hoje = LocalDate.now();
 
         Query query = new Query()
-                .addCriteria(Criteria.where("ativo").is(true))
-                .addCriteria(Criteria.where("finalizaEm").gte(agora));
+                .addCriteria(Criteria.where("ativo").is(true));
         List<Plano> planos = mongoTemplate.find(query, Plano.class);
 
         return planos.stream()
