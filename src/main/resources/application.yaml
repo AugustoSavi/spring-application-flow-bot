@@ -18,6 +18,14 @@ bot-builder:
 email-api:
   base-url: ${EMAIL_API_URL:https://email-api-placeholder.com}
 
+pix-api:
+  base-url: ${PIX_API_URL:https://caixinha-financeira-9a2031b303cc.herokuapp.com}
+  read-timeout: 35000
+  api-key: ${PIX_API_KEY:}
+  client-id: ${PIX_CLIENT_ID:}
+  chave-pix: cbe55be4-97a9-4590-a861-766c5a2233ee
+  provider: asaas
+
 app:
   base-url: ${APP_BASE_URL:http://localhost:8080}
 
