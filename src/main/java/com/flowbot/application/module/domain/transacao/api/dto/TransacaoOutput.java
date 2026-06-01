@@ -10,6 +10,8 @@ public record TransacaoOutput(
         String devedorCPF,
         String descricaoSolicitacao,
         String status,
-        String createdAt
+        String createdAt,
+        String qrCode,
+        String pixCopiaECola
 ) {
 }

@@ -23,6 +23,8 @@ public class Transacao {
     private StatusTransacao status;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime dataCriacao;
+    private String qrCode;
+    private String pixCopiaECola;
 
     public Transacao(String id,
                      String externalReference,
@@ -82,5 +84,18 @@ public class Transacao {
 
     public void atualizarStatus(final StatusTransacao novoStatus) {
         this.status = novoStatus;
+    }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public String getPixCopiaECola() {
+        return pixCopiaECola;
+    }
+
+    public void atualizarDadosPix(String qrCode, String pixCopiaECola) {
+        this.qrCode = qrCode;
+        this.pixCopiaECola = pixCopiaECola;
     }
 }

@@ -2,6 +2,7 @@ package com.flowbot.application.http;
 
 import com.flowbot.application.configs.properties.PixApiProperties;
 import com.flowbot.application.http.dtos.CriarCobrancaInput;
+import com.flowbot.application.http.dtos.CriarCobrancaOutput;
 import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class DefaultPixApi implements PixApi {
     }
 
     @Override
-    public void criarCobranca(CriarCobrancaInput input) {
+    public CriarCobrancaOutput criarCobranca(CriarCobrancaInput input) {
         var body = new HashMap<String, Object>();
         body.put("chavePix", properties.getChavePix());
         body.put("valor", input.valor());
@@ -46,9 +47,10 @@ public class DefaultPixApi implements PixApi {
                 .retrieve()
                 .onStatus(is4xx, errorHandler())
                 .onStatus(is5xx, errorHandler())
-                .body(String.class);
+                .body(CriarCobrancaOutput.class);
 
         log.info("Cobrança PIX criada para externalReference {}: {}", input.externalReference(), response);
+        return response;
     }
 
     private RestClient.ResponseSpec.ErrorHandler errorHandler() {

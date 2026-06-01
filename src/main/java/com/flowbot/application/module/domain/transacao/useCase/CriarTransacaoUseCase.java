@@ -44,13 +44,18 @@ public class CriarTransacaoUseCase {
                 null
         ));
 
-        pixApi.criarCobranca(new CriarCobrancaInput(
+        var cobranca = pixApi.criarCobranca(new CriarCobrancaInput(
                 input.valor(),
                 input.devedorNome(),
                 input.devedorCPF(),
                 input.descricaoSolicitacao(),
                 externalReference
         ));
+
+        if (cobranca != null) {
+            transacao.atualizarDadosPix(cobranca.qrCode(), cobranca.pixCopiaECola());
+            transacao = repository.save(transacao);
+        }
 
         return transacao;
     }
