@@ -29,15 +29,10 @@ public class CriarTransacaoUseCase {
 
         var externalReference = UUID.randomUUID().toString();
 
-        pixApi.criarCobranca(new CriarCobrancaInput(
-                input.valor(),
-                input.devedorNome(),
-                input.devedorCPF(),
-                input.descricaoSolicitacao(),
-                externalReference
-        ));
-
-        var transacao = new Transacao(
+        // Persistimos a transacao antes de chamar o provedor PIX para garantir
+        // que sempre exista um registro local para reconciliacao. Assim, se a
+        // cobranca for criada no provedor, ela nunca fica orfa sem registro.
+        var transacao = repository.save(new Transacao(
                 null,
                 externalReference,
                 AuthUtils.currentResourceOwner(),
@@ -47,9 +42,17 @@ public class CriarTransacaoUseCase {
                 input.descricaoSolicitacao(),
                 null,
                 null
-        );
+        ));
 
-        return repository.save(transacao);
+        pixApi.criarCobranca(new CriarCobrancaInput(
+                input.valor(),
+                input.devedorNome(),
+                input.devedorCPF(),
+                input.descricaoSolicitacao(),
+                externalReference
+        ));
+
+        return transacao;
     }
 
     private void validar(CriarTransacaoInput input) {

@@ -23,7 +23,7 @@ pix-api:
   read-timeout: 35000
   api-key: ${PIX_API_KEY:}
   client-id: ${PIX_CLIENT_ID:}
-  chave-pix: cbe55be4-97a9-4590-a861-766c5a2233ee
+  chave-pix: ${PIX_CHAVE_PIX:cbe55be4-97a9-4590-a861-766c5a2233ee}
   provider: asaas
 
 app:
