@@ -15,6 +15,7 @@ public class Transacao {
     @Id
     private String id;
     private String externalReference;
+    private String resourceOwner;
     private BigDecimal valor;
     private String devedorNome;
     private String devedorCPF;
@@ -25,6 +26,7 @@ public class Transacao {
 
     public Transacao(String id,
                      String externalReference,
+                     String resourceOwner,
                      BigDecimal valor,
                      String devedorNome,
                      String devedorCPF,
@@ -33,6 +35,7 @@ public class Transacao {
                      LocalDateTime dataCriacao) {
         this.id = id;
         this.externalReference = externalReference;
+        this.resourceOwner = resourceOwner;
         this.valor = valor;
         this.devedorNome = devedorNome;
         this.devedorCPF = devedorCPF;
@@ -47,6 +50,10 @@ public class Transacao {
 
     public String getExternalReference() {
         return externalReference;
+    }
+
+    public String getResourceOwner() {
+        return resourceOwner;
     }
 
     public BigDecimal getValor() {

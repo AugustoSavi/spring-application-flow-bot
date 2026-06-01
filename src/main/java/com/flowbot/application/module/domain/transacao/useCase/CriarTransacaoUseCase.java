@@ -5,6 +5,7 @@ import com.flowbot.application.http.dtos.CriarCobrancaInput;
 import com.flowbot.application.module.domain.transacao.Transacao;
 import com.flowbot.application.module.domain.transacao.TransacaoMongoDbRepository;
 import com.flowbot.application.module.domain.transacao.api.dto.CriarTransacaoInput;
+import com.flowbot.application.shared.AuthUtils;
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,7 @@ public class CriarTransacaoUseCase {
         var transacao = new Transacao(
                 null,
                 externalReference,
+                AuthUtils.currentResourceOwner(),
                 input.valor(),
                 input.devedorNome(),
                 input.devedorCPF(),

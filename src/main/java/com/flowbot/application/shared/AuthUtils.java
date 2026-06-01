@@ -2,15 +2,32 @@ package com.flowbot.application.shared;
 
 import com.flowbot.application.context.TenantThreads;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class AuthUtils {
 
     public static String identifyResourceOwner(final Object principal) {
         return extractResourceOwner((Jwt) principal);
+    }
+
+    public static String currentResourceOwner() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (Objects.isNull(authentication)) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof Jwt)) {
+            return null;
+        }
+
+        return identifyResourceOwner(principal);
     }
 
     public static String setTenant(String resourceOwner) {
