@@ -11,4 +11,6 @@ public interface TransacaoMongoDbRepository extends MongoRepository<Transacao, S
     Page<Transacao> findAllByResourceOwner(String resourceOwner, Pageable pageable);
 
     Optional<Transacao> findByIdAndResourceOwner(String id, String resourceOwner);
+
+    Optional<Transacao> findByExternalReferenceAndResourceOwner(String externalReference, String resourceOwner);
 }
