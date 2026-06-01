@@ -1,8 +1,9 @@
 package com.flowbot.application.http;
 
 import com.flowbot.application.http.dtos.CriarCobrancaInput;
+import com.flowbot.application.http.dtos.CriarCobrancaOutput;
 
 public interface PixApi {
 
-    void criarCobranca(CriarCobrancaInput input);
+    CriarCobrancaOutput criarCobranca(CriarCobrancaInput input);
 }

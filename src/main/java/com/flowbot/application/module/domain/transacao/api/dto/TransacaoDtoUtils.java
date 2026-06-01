@@ -24,7 +24,9 @@ public final class TransacaoDtoUtils {
                 transacao.getDevedorCPF(),
                 transacao.getDescricaoSolicitacao(),
                 transacao.getStatus().toString(),
-                calculateElapsedTime(transacao.getDataCriacao())
+                calculateElapsedTime(transacao.getDataCriacao()),
+                transacao.getQrCode(),
+                transacao.getPixCopiaECola()
         );
     }
 }
