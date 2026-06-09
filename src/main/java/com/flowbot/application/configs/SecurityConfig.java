@@ -29,6 +29,8 @@ public class SecurityConfig {
                             authorizeConfig.requestMatchers(HttpMethod.POST, "/usuario").permitAll();
                             authorizeConfig.requestMatchers(HttpMethod.GET, "/usuario/confirmar").permitAll();
                             authorizeConfig.requestMatchers(HttpMethod.POST, "/usuario/reenviar-confirmacao").permitAll();
+                            authorizeConfig.requestMatchers(HttpMethod.POST, "/transacoes/webhook/confirmacao").permitAll();
+                            authorizeConfig.requestMatchers("/transacoes", "/transacoes/**").permitAll();
                             authorizeConfig.requestMatchers(HttpMethod.OPTIONS).permitAll();
                             authorizeConfig.anyRequest().authenticated();
                         })
