@@ -35,7 +35,7 @@ class ConfirmarPagamentoTransacaoUseCaseTest extends UseCaseTest {
                 new BigDecimal("100.00"), "João Silva", "12345678900", "Pagamento teste",
                 StatusTransacao.SOLICITADO, null);
 
-        when(repository.findByExternalReferenceAndResourceOwner("ext-ref-123", "client-abc"))
+        when(repository.findByExternalReference("ext-ref-123"))
                 .thenReturn(Optional.of(transacao));
         when(repository.save(any(Transacao.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -50,7 +50,7 @@ class ConfirmarPagamentoTransacaoUseCaseTest extends UseCaseTest {
     @DisplayName("Deve lançar exceção quando a transação não for encontrada")
     @Test
     void transacaoNaoEncontrada() {
-        when(repository.findByExternalReferenceAndResourceOwner(any(), any())).thenReturn(Optional.empty());
+        when(repository.findByExternalReference(any())).thenReturn(Optional.empty());
 
         var input = new ConfirmacaoTransacaoWebhookInput("client-abc", "ext-ref-inexistente", null);
 
@@ -58,13 +58,22 @@ class ConfirmarPagamentoTransacaoUseCaseTest extends UseCaseTest {
         verify(repository, never()).save(any());
     }
 
-    @DisplayName("Deve lançar exceção quando clientID for nulo")
+    @DisplayName("Deve confirmar pagamento mesmo sem clientID, buscando apenas pelo externalRef")
     @Test
-    void clientIdNulo() {
-        var input = new ConfirmacaoTransacaoWebhookInput(null, "ext-ref-123", null);
+    void confirmaSemClientId() {
+        var transacao = new Transacao("id-2", "ext-ref-456", "client-xyz",
+                new BigDecimal("50.00"), "Maria Souza", "98765432100", "Outro pagamento",
+                StatusTransacao.SOLICITADO, null);
 
-        assertThrows(ValidationException.class, () -> useCase.execute(input));
-        verifyNoInteractions(repository);
+        when(repository.findByExternalReference("ext-ref-456")).thenReturn(Optional.of(transacao));
+        when(repository.save(any(Transacao.class))).thenAnswer(i -> i.getArgument(0));
+
+        var input = new ConfirmacaoTransacaoWebhookInput(null, "ext-ref-456", null);
+        useCase.execute(input);
+
+        var captor = ArgumentCaptor.forClass(Transacao.class);
+        verify(repository).save(captor.capture());
+        assertEquals(StatusTransacao.PAGAMENTO_EFETUADO, captor.getValue().getStatus());
     }
 
     @DisplayName("Deve lançar exceção quando externalRef for vazio")
